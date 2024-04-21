@@ -22,7 +22,8 @@ CMDGraphics::Graphics::Graphics()
 
 	m_BackBuffer = m_SecondBuffer;
 
-	m_LastSize = GetScreenSize();
+	m_LastSizeFirst = GetScreenSize();
+	m_LastSizeSecond = GetScreenSize();
 }
 
 CMDGraphics::Graphics::~Graphics()
@@ -53,23 +54,35 @@ CMDGraphics::Frame::Frame(Graphics &gfx)
 {
 	m_ScreenSize = m_Gfx.GetScreenSize();
 
-	if (m_ScreenSize.X != m_Gfx.m_LastSize.X || m_ScreenSize.Y != m_Gfx.m_LastSize.Y)
+	/*if (m_Gfx.m_BackBuffer == m_Gfx.m_SecondBuffer && (m_ScreenSize.X != m_Gfx.m_LastSizeSecond.X || m_ScreenSize.Y != m_Gfx.m_LastSizeSecond.Y))
 	{
-		if (m_Gfx.m_BackBuffer == m_Gfx.m_SecondBuffer)
-		{
-			CloseHandle(m_Gfx.m_SecondBuffer);
+		CloseHandle(m_Gfx.m_SecondBuffer);
 
-			m_Gfx.m_SecondBuffer = CreateConsoleScreenBuffer(
-				GENERIC_READ | GENERIC_WRITE,
-				FILE_SHARE_WRITE | FILE_SHARE_READ,
-				NULL,
-				CONSOLE_TEXTMODE_BUFFER,
-				NULL
-			);
+		m_Gfx.m_SecondBuffer = CreateConsoleScreenBuffer(
+			GENERIC_READ | GENERIC_WRITE,
+			FILE_SHARE_WRITE | FILE_SHARE_READ,
+			NULL,
+			CONSOLE_TEXTMODE_BUFFER,
+			NULL
+		);
 
-			m_Gfx.m_LastSize = m_ScreenSize;
-		}
+		m_Gfx.m_LastSizeSecond = m_ScreenSize;
 	}
+
+	if (m_Gfx.m_BackBuffer == m_Gfx.m_FirstBuffer && (m_ScreenSize.X != m_Gfx.m_LastSizeFirst.X || m_ScreenSize.Y != m_Gfx.m_LastSizeFirst.Y))
+	{
+		CloseHandle(m_Gfx.m_FirstBuffer);
+
+		m_Gfx.m_FirstBuffer = CreateConsoleScreenBuffer(
+			GENERIC_READ | GENERIC_WRITE,
+			FILE_SHARE_WRITE | FILE_SHARE_READ,
+			NULL,
+			CONSOLE_TEXTMODE_BUFFER,
+			NULL
+		);
+
+		m_Gfx.m_LastSizeFirst = m_ScreenSize;
+	}*/
 
 	m_Gfx.m_FrameData.clear();
 	m_Gfx.m_FrameData.resize(m_ScreenSize.X * m_ScreenSize.Y, L' ');

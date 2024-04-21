@@ -10,6 +10,9 @@
     <ClInclude Include="CMDGraphics.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="BufferedCStr.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CMDGraphics.cpp">

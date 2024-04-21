@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BufferedCStr.hpp" />
     <ClInclude Include="CMDGraphics.hpp" />
   </ItemGroup>
   <ItemGroup>

@@ -34,11 +34,8 @@ int main()
 		frame.Write(6, 3, "Hello World!");
 
 		frame.Write("hellofffffffffff\n");
-		frame.Write("hellofffffffffff\n");
-		frame.Write("hellofffffffffff\n");
-		frame.Write("hellofffffffffff\n");
-		frame.Write("hellofffffffffff\n");
-		frame.Write("hellofffffffffff\n");
+
+		frame.WriteF("hello {}\n", 123);
 
 		++counter;
 

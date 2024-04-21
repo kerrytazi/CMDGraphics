@@ -1,9 +1,16 @@
 #include "CMDGraphics.hpp"
 
+#include <cstring>
 
 CMDGraphics::Graphics::Graphics()
 {
-	m_FirstBuffer = GetStdHandle(STD_OUTPUT_HANDLE);
+	m_FirstBuffer = CreateConsoleScreenBuffer(
+		GENERIC_READ | GENERIC_WRITE,
+		FILE_SHARE_WRITE | FILE_SHARE_READ,
+		NULL,
+		CONSOLE_TEXTMODE_BUFFER,
+		NULL
+	);
 
 	m_SecondBuffer = CreateConsoleScreenBuffer(
 		GENERIC_READ | GENERIC_WRITE,
@@ -20,9 +27,7 @@ CMDGraphics::Graphics::Graphics()
 
 CMDGraphics::Graphics::~Graphics()
 {
-	if (m_BackBuffer == m_FirstBuffer)
-		SwapBuffers();
-
+	CloseHandle(m_FirstBuffer);
 	CloseHandle(m_SecondBuffer);
 }
 
@@ -66,6 +71,7 @@ CMDGraphics::Frame::Frame(Graphics &gfx)
 		}
 	}
 
+	m_Gfx.m_FrameData.clear();
 	m_Gfx.m_FrameData.resize(m_ScreenSize.X * m_ScreenSize.Y, L' ');
 }
 
@@ -79,12 +85,6 @@ CMDGraphics::Frame::~Frame()
 CMDGraphics::Vector CMDGraphics::Frame::Size()
 {
 	return { (size_t)m_ScreenSize.X, (size_t)m_ScreenSize.Y };
-}
-
-void CMDGraphics::Frame::Clear()
-{
-	m_Gfx.m_FrameData.clear();
-	m_Gfx.m_FrameData.resize(m_ScreenSize.X * m_ScreenSize.Y, L' ');
 }
 
 size_t CMDGraphics::Frame::Write(size_t x, size_t y, wchar_t c)
@@ -107,3 +107,89 @@ size_t CMDGraphics::Frame::Write(size_t x, size_t y, wchar_t const *str, size_t 
 
 	return wrote;
 }
+
+size_t CMDGraphics::Frame::Write(size_t x, size_t y, wchar_t const *str)
+{
+	return Write(x, y, str, wcslen(str));
+}
+
+size_t CMDGraphics::Frame::Write(wchar_t c)
+{
+	if (c == L'\n')
+	{
+		m_Cursor.X = 0;
+		++m_Cursor.Y;
+
+		return 1;
+	}
+
+	if (Write(m_Cursor.X, m_Cursor.Y, c) == 1)
+	{
+		if (++m_Cursor.X == m_ScreenSize.X)
+		{
+			m_Cursor.X = 0;
+			++m_Cursor.Y;
+		}
+
+		return 1;
+	}
+
+	return 0;
+}
+
+size_t CMDGraphics::Frame::Write(wchar_t const *str, size_t strSize)
+{
+	size_t wrote = 0;
+
+	for (size_t i = 0; i < strSize; ++i)
+		wrote += Write(str[i]);
+
+	return wrote;
+}
+
+size_t CMDGraphics::Frame::Write(wchar_t const *str)
+{
+	return Write(str, wcslen(str));
+}
+
+
+size_t CMDGraphics::Frame::Write(size_t x, size_t y, char c)
+{
+	return Write(x, y, (wchar_t)c);
+}
+
+size_t CMDGraphics::Frame::Write(size_t x, size_t y, char const *str, size_t strSize)
+{
+	size_t wrote = 0;
+
+	for (size_t i = 0; i < strSize; ++i)
+		wrote += Write(x + i, y, (wchar_t)str[i]);
+
+	return wrote;
+}
+
+size_t CMDGraphics::Frame::Write(size_t x, size_t y, char const *str)
+{
+	return Write(x, y, str, strlen(str));
+}
+
+size_t CMDGraphics::Frame::Write(char c)
+{
+	return Write((wchar_t)c);
+}
+
+size_t CMDGraphics::Frame::Write(char const *str, size_t strSize)
+{
+	size_t wrote = 0;
+
+	for (size_t i = 0; i < strSize; ++i)
+		wrote += Write((wchar_t)str[i]);
+
+	return wrote;
+}
+
+size_t CMDGraphics::Frame::Write(char const *str)
+{
+	return Write(str, strlen(str));
+}
+

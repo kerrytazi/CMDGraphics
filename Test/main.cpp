@@ -15,8 +15,6 @@ int main()
 	{
 		CMDGraphics::Frame frame(gfx);
 
-		frame.Clear();
-
 		auto size = frame.Size();
 
 		size_t dist = counter;
@@ -33,7 +31,14 @@ int main()
 			}
 		}
 
-		frame.Write(6, 3, L"Hello World!", 12);
+		frame.Write(6, 3, "Hello World!");
+
+		frame.Write("hellofffffffffff\n");
+		frame.Write("hellofffffffffff\n");
+		frame.Write("hellofffffffffff\n");
+		frame.Write("hellofffffffffff\n");
+		frame.Write("hellofffffffffff\n");
+		frame.Write("hellofffffffffff\n");
 
 		++counter;
 

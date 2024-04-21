@@ -45,15 +45,27 @@ public:
 
 	Vector Size();
 
-	void Clear();
-
 	size_t Write(size_t x, size_t y, wchar_t c);
 	size_t Write(size_t x, size_t y, wchar_t const *str, size_t strSize);
+	size_t Write(size_t x, size_t y, wchar_t const *str);
+
+	size_t Write(wchar_t c);
+	size_t Write(wchar_t const *str, size_t strSize);
+	size_t Write(wchar_t const *str);
+
+	size_t Write(size_t x, size_t y, char c);
+	size_t Write(size_t x, size_t y, char const *str, size_t strSize);
+	size_t Write(size_t x, size_t y, char const *str);
+
+	size_t Write(char c);
+	size_t Write(char const *str, size_t strSize);
+	size_t Write(char const *str);
 
 private:
 
 	Graphics &m_Gfx;
 	COORD m_ScreenSize = {};
+	COORD m_Cursor = {};
 };
 
 

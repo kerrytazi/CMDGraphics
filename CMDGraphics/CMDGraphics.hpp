@@ -55,12 +55,12 @@ public:
 	Color() = default;
 
 	Color(Foreground const &Other)
-		: m_Value(static_cast<WORD>(Other))
+		: m_Value(static_cast<WORD>(Other) | static_cast<WORD>(Background::Black))
 	{
 	}
 
 	Color(Background const &Other)
-		: m_Value(static_cast<WORD>(Other))
+		: m_Value(static_cast<WORD>(Other) | static_cast<WORD>(Foreground::White))
 	{
 	}
 

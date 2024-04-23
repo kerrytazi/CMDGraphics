@@ -59,8 +59,10 @@ int main()
 			Color d = FGColor::Red | BGColor::Yellow;
 
 			frame.Write(10, 10, FGColor::Red | BGColor::Yellow, L'H');
-			frame.Write(FGColor::Red | BGColor::Yellow, "Hello");
-			frame.WriteF(FGColor::Red | BGColor::Yellow, "Hello {} {} {}", 123, "World", 3.3);
+			frame.Write(FGColor::Red | BGColor::Yellow, "Hello\n");
+			frame.WriteF(FGColor::Red | BGColor::Yellow, "Hello {} {} {}\n", 123, "World", 3.3);
+			frame.WriteF(FGColor::Red, "Hello {} {} {}\n", 123, "World", 3.3);
+			frame.WriteF(BGColor::Red, "Hello {} {} {}\n", 123, "World", 3.3);
 		}
 
 		{

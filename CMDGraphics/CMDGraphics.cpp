@@ -86,12 +86,38 @@ CMDGraphics::Frame::Frame(Graphics &gfx)
 
 	m_Gfx.m_FrameData.clear();
 	m_Gfx.m_FrameData.resize(m_ScreenSize.X * m_ScreenSize.Y, L' ');
+
+	m_Gfx.m_FrameColorData.clear();
+	m_Gfx.m_FrameColorData.resize(m_ScreenSize.X * m_ScreenSize.Y);
 }
 
 CMDGraphics::Frame::~Frame()
 {
 	SetConsoleCursorPosition(m_Gfx.m_BackBuffer, { 0, 0 });
-	WriteConsoleW(m_Gfx.m_BackBuffer, m_Gfx.m_FrameData.data(), static_cast<DWORD>(m_Gfx.m_FrameData.size()), NULL, NULL);
+
+	Color color;
+	size_t i = 0;
+
+	while (i < m_Gfx.m_FrameData.size())
+	{
+		Color lastColor = color;
+		size_t lastI = i;
+
+		for (; i < m_Gfx.m_FrameData.size(); ++i)
+		{
+			if (m_Gfx.m_FrameColorData[i] != lastColor)
+			{
+				lastColor = m_Gfx.m_FrameColorData[i];
+				break;
+			}
+		}
+
+		SetConsoleTextAttribute(m_Gfx.m_BackBuffer, color.GetInner());
+		WriteConsoleW(m_Gfx.m_BackBuffer, m_Gfx.m_FrameData.data() + lastI, static_cast<DWORD>(i - lastI), NULL, NULL);
+
+		color = lastColor;
+	}
+
 	m_Gfx.SwapBuffers();
 }
 
@@ -100,33 +126,35 @@ CMDGraphics::Vector CMDGraphics::Frame::Size()
 	return { (size_t)m_ScreenSize.X, (size_t)m_ScreenSize.Y };
 }
 
-size_t CMDGraphics::Frame::Write(size_t x, size_t y, wchar_t c)
+
+size_t CMDGraphics::Frame::Write(size_t x, size_t y, Color color, wchar_t c)
 {
 	if (x < (size_t)m_ScreenSize.X && y < (size_t)m_ScreenSize.Y)
 	{
 		m_Gfx.m_FrameData[y * m_ScreenSize.X + x] = c;
+		m_Gfx.m_FrameColorData[y * m_ScreenSize.X + x] = color;
 		return 1;
 	}
 
 	return 0;
 }
 
-size_t CMDGraphics::Frame::Write(size_t x, size_t y, wchar_t const *str, size_t strSize)
+size_t CMDGraphics::Frame::Write(size_t x, size_t y, Color color, wchar_t const *str, size_t strSize)
 {
 	size_t wrote = 0;
 
 	for (size_t i = 0; i < strSize; ++i)
-		wrote += Write(x + i, y, str[i]);
+		wrote += Write(x + i, y, color, str[i]);
 
 	return wrote;
 }
 
-size_t CMDGraphics::Frame::Write(size_t x, size_t y, wchar_t const *str)
+size_t CMDGraphics::Frame::Write(size_t x, size_t y, Color color, wchar_t const *str)
 {
-	return Write(x, y, str, wcslen(str));
+	return Write(x, y, color, str, wcslen(str));
 }
 
-size_t CMDGraphics::Frame::Write(wchar_t c)
+size_t CMDGraphics::Frame::Write(Color color, wchar_t c)
 {
 	if (c == L'\n')
 	{
@@ -136,7 +164,7 @@ size_t CMDGraphics::Frame::Write(wchar_t c)
 		return 1;
 	}
 
-	if (Write(m_Cursor.X, m_Cursor.Y, c) == 1)
+	if (Write(m_Cursor.X, m_Cursor.Y, color, c) == 1)
 	{
 		if (++m_Cursor.X == m_ScreenSize.X)
 		{
@@ -150,59 +178,59 @@ size_t CMDGraphics::Frame::Write(wchar_t c)
 	return 0;
 }
 
-size_t CMDGraphics::Frame::Write(wchar_t const *str, size_t strSize)
+size_t CMDGraphics::Frame::Write(Color color, wchar_t const *str, size_t strSize)
 {
 	size_t wrote = 0;
 
 	for (size_t i = 0; i < strSize; ++i)
-		wrote += Write(str[i]);
+		wrote += Write(color, str[i]);
 
 	return wrote;
 }
 
-size_t CMDGraphics::Frame::Write(wchar_t const *str)
+size_t CMDGraphics::Frame::Write(Color color, wchar_t const *str)
 {
-	return Write(str, wcslen(str));
+	return Write(color, str, wcslen(str));
 }
 
 
-size_t CMDGraphics::Frame::Write(size_t x, size_t y, char c)
+size_t CMDGraphics::Frame::Write(size_t x, size_t y, Color color, char c)
 {
-	return Write(x, y, (wchar_t)c);
+	return Write(x, y, color, (wchar_t)c);
 }
 
-size_t CMDGraphics::Frame::Write(size_t x, size_t y, char const *str, size_t strSize)
+size_t CMDGraphics::Frame::Write(size_t x, size_t y, Color color, char const *str, size_t strSize)
 {
 	size_t wrote = 0;
 
 	for (size_t i = 0; i < strSize; ++i)
-		wrote += Write(x + i, y, (wchar_t)str[i]);
+		wrote += Write(x + i, y, color, (wchar_t)str[i]);
 
 	return wrote;
 }
 
-size_t CMDGraphics::Frame::Write(size_t x, size_t y, char const *str)
+size_t CMDGraphics::Frame::Write(size_t x, size_t y, Color color, char const *str)
 {
-	return Write(x, y, str, strlen(str));
+	return Write(x, y, color, str, strlen(str));
 }
 
-size_t CMDGraphics::Frame::Write(char c)
+size_t CMDGraphics::Frame::Write(Color color, char c)
 {
-	return Write((wchar_t)c);
+	return Write(color, (wchar_t)c);
 }
 
-size_t CMDGraphics::Frame::Write(char const *str, size_t strSize)
+size_t CMDGraphics::Frame::Write(Color color, char const *str, size_t strSize)
 {
 	size_t wrote = 0;
 
 	for (size_t i = 0; i < strSize; ++i)
-		wrote += Write((wchar_t)str[i]);
+		wrote += Write(color, (wchar_t)str[i]);
 
 	return wrote;
 }
 
-size_t CMDGraphics::Frame::Write(char const *str)
+size_t CMDGraphics::Frame::Write(Color color, char const *str)
 {
-	return Write(str, strlen(str));
+	return Write(color, str, strlen(str));
 }
 

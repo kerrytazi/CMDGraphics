@@ -24,6 +24,8 @@ CMDGraphics::Graphics::Graphics()
 
 	m_LastSizeFirst = GetScreenSize();
 	m_LastSizeSecond = GetScreenSize();
+
+	setlocale(LC_ALL, "en_US.utf8");
 }
 
 CMDGraphics::Graphics::~Graphics()

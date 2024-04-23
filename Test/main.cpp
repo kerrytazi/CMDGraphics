@@ -63,6 +63,10 @@ int main()
 			frame.WriteF(FGColor::Red | BGColor::Yellow, "Hello {} {} {}", 123, "World", 3.3);
 		}
 
+		{
+			frame.Write(L"\n\n\x2560\x2566\x2550\x2563\n");
+		}
+
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000 / 60));
 	}
 }
